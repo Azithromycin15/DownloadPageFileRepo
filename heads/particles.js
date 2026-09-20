@@ -1,6 +1,6 @@
 /* ============================================================
  * Surayson 下载站 · 鼠标移动粒子特效（原生 JS，无依赖）
- *  - 仅在鼠标移动时沿轨迹生成 4×4 纯黑方块粒子
+ *  - 仅在鼠标移动时严格沿轨迹生成 4×4 纯黑方块粒子
  *  - 粒子受轻微重力向下掉落，渐隐后消失
  *  - 自动适配高分屏（DPR）与窗口缩放
  *  - 遵循 prefers-reduced-motion 无障碍偏好
@@ -16,10 +16,10 @@
     const COLOR = "#000000";
 
     const MAX_PARTICLES = 300; // 粒子总数上限
-    const STEP_DIST = 10;      // 鼠标每移动该距离（px）生成一颗粒子
+    const STEP_DIST = 6;       // 鼠标每移动该距离（px）生成一颗粒子
     const LIFE_MIN = 600;      // 粒子最短寿命（ms）
-    const LIFE_MAX = 1000;     // 粒子最长寿命（ms）
-    const GRAVITY = 0.035;     // 重力加速度（px/帧²，60fps 基准，轻微）
+    const LIFE_MAX = 900;      // 粒子最长寿命（ms）
+    const GRAVITY = 0.04;      // 重力加速度（px/帧²，60fps 基准）
 
     /* ---------- 画布 ---------- */
 
@@ -48,52 +48,57 @@
     /* ---------- 粒子 ---------- */
 
     let particles = [];
-    let lastX = -1;
-    let lastY = -1;
+    let cursor = null; // 当前光标位置（页面上时）
+    let emitX = -1;    // 上次发射粒子时的位置
+    let emitY = -1;
 
-    /* 在指定位置生成一颗粒子（4×4 黑色方块） */
+    /* 在指定位置生成一颗粒子（4×4 黑色方块，严格落在轨迹上） */
     function spawn(x, y) {
         if (particles.length >= MAX_PARTICLES) particles.shift();
 
         particles.push({
             x,
             y,
-            vx: (Math.random() - 0.5) * 6, // 极轻微水平漂移
-            vy: Math.random() * 4,         // 缓慢向下
-            size: 4,                       // 4×4 像素
+            vy: 0,   // 初始速度为零，仅受重力下落
+            size: 4, // 4×4 像素
             color: COLOR,
             born: performance.now(),
             life: LIFE_MIN + Math.random() * (LIFE_MAX - LIFE_MIN),
         });
     }
 
-    /* 沿移动路径撒粒子：仅在鼠标移动时生成 */
-    function trail(x, y) {
-        if (lastX < 0) { // 首次进入页面，只记录位置
-            lastX = x;
-            lastY = y;
-            return;
-        }
-        const dist = Math.hypot(x - lastX, y - lastY);
+    /* 从上次发射点沿直线到当前位置，每隔 STEP_DIST 生成一颗粒子 */
+    function emitAlong(fromX, fromY, toX, toY) {
+        const dx = toX - fromX;
+        const dy = toY - fromY;
+        const dist = Math.hypot(dx, dy);
         if (dist < STEP_DIST) return;
 
-        const steps = Math.min(6, Math.ceil(dist / STEP_DIST));
-        for (let i = 1; i <= steps; i++) {
-            const t = i / steps;
-            spawn(lastX + (x - lastX) * t, lastY + (y - lastY) * t);
+        const n = Math.min(24, Math.floor(dist / STEP_DIST));
+        for (let i = 1; i <= n; i++) {
+            const t = i / n;
+            spawn(fromX + dx * t, fromY + dy * t);
         }
-        lastX = x;
-        lastY = y;
+        emitX = toX;
+        emitY = toY;
     }
 
     /* ---------- 事件 ---------- */
 
-    window.addEventListener("pointermove", (e) => trail(e.clientX, e.clientY));
+    /* 只记录光标位置，发射交由渲染循环逐帧处理（严格跟随轨迹） */
+    window.addEventListener("pointermove", (e) => {
+        if (cursor === null) { // 首次进入页面：以进入点为发射起点
+            emitX = e.clientX;
+            emitY = e.clientY;
+        }
+        cursor = { x: e.clientX, y: e.clientY };
+    });
 
     /* 光标离开页面后停止生成，已有粒子继续下落 */
     window.addEventListener("pointerleave", () => {
-        lastX = -1;
-        lastY = -1;
+        cursor = null;
+        emitX = -1;
+        emitY = -1;
     });
 
     /* ---------- 渲染循环 ---------- */
@@ -104,16 +109,23 @@
         const dt = Math.min((now - last) / 1000, 0.05); // 秒，封顶防跳帧
         last = now;
 
+        /* 逐帧沿光标轨迹发射粒子：光标到哪，粒子就跟到哪 */
+        if (cursor) {
+            if (emitX < 0) {
+                emitX = cursor.x;
+                emitY = cursor.y;
+            }
+            emitAlong(emitX, emitY, cursor.x, cursor.y);
+        }
+
         ctx.clearRect(0, 0, width, height);
 
         particles = particles.filter((p) => {
             const age = now - p.born;
             if (age >= p.life) return false;
 
-            /* 重力下落 + 空气阻尼 */
+            /* 只受重力：垂直下落，水平位置不变（严格跟随轨迹） */
             p.vy = p.vy + GRAVITY * dt * 60;
-            p.vx *= 0.96;
-            p.x += p.vx * dt * 60;
             p.y += p.vy * dt * 60;
 
             const t = age / p.life; // 0 → 1
