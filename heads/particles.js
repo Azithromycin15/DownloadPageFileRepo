@@ -1,7 +1,7 @@
 /* ============================================================
- * Surayson 下载站 · 鼠标粒子特效（原生 JS，无依赖）
- *  - 鼠标移动：彩色粒子拖尾
- *  - 鼠标点击：粒子爆裂 + 扩散涟漪
+ * Surayson 下载站 · 鼠标跟随粒子特效（原生 JS，无依赖）
+ *  - 粒子在光标位置持续生成，跟随鼠标移动
+ *  - 粒子受重力影响向下掉落，渐隐缩小后消失
  *  - 自动适配高分屏（DPR）与窗口缩放
  *  - 遵循 prefers-reduced-motion 无障碍偏好
  * ============================================================ */
@@ -18,11 +18,11 @@
         "#2563eb", "#0d9488", "#16a34a", "#7c3aed", "#ea580c",
     ];
 
-    const TRAIL_LIFE = 900;    // 拖尾粒子寿命（ms）
-    const CLICK_LIFE = 1100;   // 爆裂粒子寿命（ms）
-    const CLICK_COUNT = 18;    // 点击时爆裂粒子数量
     const MAX_PARTICLES = 400; // 粒子总数上限
-    const MIN_TRAIL_DIST = 10; // 移动超过该距离才生成粒子
+    const EMIT_RATE = 2.5;     // 每帧发射粒子数（60fps 基准）
+    const LIFE_MIN = 600;      // 粒子最短寿命（ms）
+    const LIFE_MAX = 1300;     // 粒子最长寿命（ms）
+    const GRAVITY = 0.085;     // 重力加速度（px/帧²，60fps 基准）
 
     /* ---------- 画布 ---------- */
 
@@ -51,90 +51,54 @@
     /* ---------- 粒子 ---------- */
 
     let particles = [];
+    let cursor = null; // 当前光标位置，未进入页面时为 null
 
-    function spawn(x, y, opts = {}) {
+    /* 在光标处生成一颗粒子 */
+    function spawn() {
         if (particles.length >= MAX_PARTICLES) particles.shift();
 
-        const angle = opts.angle ?? Math.random() * Math.PI * 2;
-        const speed = opts.speed ?? 0;
-        const jitter = 0.4 + Math.random() * 0.6; // 速度随机系数
-
         particles.push({
-            x, y,
-            vx: Math.cos(angle) * speed * jitter,
-            vy: Math.sin(angle) * speed * jitter,
-            size: opts.size ?? 1.5 + Math.random() * 2.5,
-            color: opts.color ?? COLORS[(Math.random() * COLORS.length) | 0],
+            x: cursor.x + (Math.random() - 0.5) * 10,
+            y: cursor.y + (Math.random() - 0.5) * 6,
+            vx: (Math.random() - 0.5) * 26, // 轻微水平漂移
+            vy: Math.random() * 22 - 4,     // 接近零的初始下落速度
+            size: 1.2 + Math.random() * 2.6,
+            color: COLORS[(Math.random() * COLORS.length) | 0],
             born: performance.now(),
-            life: opts.life ?? TRAIL_LIFE,
-            gravity: opts.gravity ?? 0.03,
-            damping: opts.damping ?? 0.93,
-            ring: !!opts.ring,
+            life: LIFE_MIN + Math.random() * (LIFE_MAX - LIFE_MIN),
         });
-    }
-
-    /* 鼠标拖尾：沿移动路径撒粒子 */
-    let lastX = -1;
-    let lastY = -1;
-
-    function trail(x, y) {
-        const dist = Math.hypot(x - lastX, y - lastY);
-        if (dist < MIN_TRAIL_DIST) return;
-        lastX = x;
-        lastY = y;
-
-        const steps = Math.min(3, Math.ceil(dist / 24));
-        for (let i = 0; i < steps; i++) {
-            spawn(x + (Math.random() - 0.5) * 8, y + (Math.random() - 0.5) * 8, {
-                life: TRAIL_LIFE * (0.7 + Math.random() * 0.5),
-                speed: 14 + Math.random() * 18,
-                damping: 0.92,
-                gravity: 0.035,
-                size: 1.2 + Math.random() * 2.2,
-            });
-        }
-    }
-
-    /* 鼠标点击：放射状爆裂 + 涟漪 */
-    function burst(x, y) {
-        const base = Math.random() * Math.PI * 2;
-        for (let i = 0; i < CLICK_COUNT; i++) {
-            const angle = base + (i / CLICK_COUNT) * Math.PI * 2;
-            spawn(x, y, {
-                color: COLORS[2 + ((Math.random() * (COLORS.length - 2)) | 0)],
-                angle,
-                speed: 90 + Math.random() * 180,
-                life: CLICK_LIFE * (0.6 + Math.random() * 0.6),
-                damping: 0.9,
-                gravity: 0.12,
-                size: 1.5 + Math.random() * 2.8,
-            });
-        }
-        spawn(x, y, { color: "#111111", size: 3, life: 520, speed: 0, ring: true });
     }
 
     /* ---------- 事件 ---------- */
 
-    window.addEventListener("pointermove", (e) => trail(e.clientX, e.clientY));
-
-    window.addEventListener("pointerdown", (e) => {
-        if (e.button !== 0) return; // 仅左键
-        burst(e.clientX, e.clientY);
+    window.addEventListener("pointermove", (e) => {
+        cursor = { x: e.clientX, y: e.clientY };
     });
 
-    /* 鼠标离开窗口后重置轨迹，避免再次进入时拉出长线 */
+    /* 光标离开页面后停止生成，已有粒子继续下落 */
     window.addEventListener("pointerleave", () => {
-        lastX = -1;
-        lastY = -1;
+        cursor = null;
     });
 
     /* ---------- 渲染循环 ---------- */
 
     let last = performance.now();
+    let emitAcc = 0;
 
     function frame(now) {
         const dt = Math.min((now - last) / 1000, 0.05); // 秒，封顶防跳帧
         last = now;
+
+        /* 持续在光标位置发射粒子（跟随鼠标） */
+        if (cursor) {
+            emitAcc += EMIT_RATE * dt * 60;
+            while (emitAcc >= 1) {
+                spawn();
+                emitAcc -= 1;
+            }
+        } else {
+            emitAcc = 0;
+        }
 
         ctx.clearRect(0, 0, width, height);
 
@@ -142,28 +106,21 @@
             const age = now - p.born;
             if (age >= p.life) return false;
 
-            p.vx *= p.damping;
-            p.vy = p.vy * p.damping + p.gravity * dt * 60;
+            /* 重力下落 + 空气阻尼 */
+            p.vy = p.vy + GRAVITY * dt * 60;
+            p.vx *= 0.96;
             p.x += p.vx * dt * 60;
             p.y += p.vy * dt * 60;
 
             const t = age / p.life; // 0 → 1
-            const alpha = t > 0.7 ? (1 - t) / 0.3 : 1; // 末段渐隐
+            const alpha = (1 - t) * (1 - t); // 渐隐
+            const size = p.size * (1 - t * 0.5); // 渐小
 
-            if (p.ring) {
-                ctx.globalAlpha = alpha;
-                ctx.strokeStyle = p.color;
-                ctx.lineWidth = 0.5 + 1.5 * (1 - t);
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, p.size + t * 26, 0, Math.PI * 2);
-                ctx.stroke();
-            } else {
-                ctx.globalAlpha = alpha;
-                ctx.fillStyle = p.color;
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, p.size * (1 - t * 0.4), 0, Math.PI * 2);
-                ctx.fill();
-            }
+            ctx.globalAlpha = alpha;
+            ctx.fillStyle = p.color;
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, size, 0, Math.PI * 2);
+            ctx.fill();
             return true;
         });
 
@@ -172,3 +129,4 @@
     }
     requestAnimationFrame(frame);
 })();
+
