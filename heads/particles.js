@@ -12,17 +12,14 @@
     /* 用户偏好"减少动效"时直接禁用 */
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-    /* 与页面图标同色系的扁平配色（前两个深色权重更高） */
-    const COLORS = [
-        "#111111", "#111111", "#555555",
-        "#2563eb", "#0d9488", "#16a34a", "#7c3aed", "#ea580c",
-    ];
+    /* 纯黑粒子 */
+    const COLOR = "#000000";
 
-    const MAX_PARTICLES = 400; // 粒子总数上限
-    const EMIT_RATE = 2.5;     // 每帧发射粒子数（60fps 基准）
-    const LIFE_MIN = 600;      // 粒子最短寿命（ms）
-    const LIFE_MAX = 1300;     // 粒子最长寿命（ms）
-    const GRAVITY = 0.085;     // 重力加速度（px/帧²，60fps 基准）
+    const MAX_PARTICLES = 300; // 粒子总数上限
+    const EMIT_RATE = 1.2;     // 每帧发射粒子数（60fps 基准，保持稀疏）
+    const LIFE_MIN = 800;      // 粒子最短寿命（ms）
+    const LIFE_MAX = 1500;     // 粒子最长寿命（ms）
+    const GRAVITY = 0.035;     // 重力加速度（px/帧²，60fps 基准，轻微）
 
     /* ---------- 画布 ---------- */
 
@@ -58,12 +55,12 @@
         if (particles.length >= MAX_PARTICLES) particles.shift();
 
         particles.push({
-            x: cursor.x + (Math.random() - 0.5) * 10,
-            y: cursor.y + (Math.random() - 0.5) * 6,
-            vx: (Math.random() - 0.5) * 26, // 轻微水平漂移
-            vy: Math.random() * 22 - 4,     // 接近零的初始下落速度
-            size: 1.2 + Math.random() * 2.6,
-            color: COLORS[(Math.random() * COLORS.length) | 0],
+            x: cursor.x + (Math.random() - 0.5) * 8,
+            y: cursor.y + (Math.random() - 0.5) * 4,
+            vx: (Math.random() - 0.5) * 6,   // 极轻微水平漂移
+            vy: Math.random() * 6,           // 缓慢向下
+            size: 0.8 + Math.random() * 1.4, // 小颗粒
+            color: COLOR,
             born: performance.now(),
             life: LIFE_MIN + Math.random() * (LIFE_MAX - LIFE_MIN),
         });
