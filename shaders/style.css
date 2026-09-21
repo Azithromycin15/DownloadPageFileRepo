@@ -1,12 +1,25 @@
 /* ============================================================
-   SUMI 下载站 · 样式表（纯 CSS，无 JS · 纯白极简）
+   Surayson 下载站 · 样式表（纯白极简）
+   目录：
+     1. 设计令牌     2. 基础样式     3. 悬浮导航
+     4. Hero        5. 目录与分组   6. 下载卡片
+     7. 平台标签     8. 页脚         9. 响应式
    ============================================================ */
 
+/* ---------- 1. 设计令牌 ---------- */
+
 :root {
+    /* 颜色 */
     --bg: #ffffff;
     --text: #111111;
     --text-soft: #3d3d3d;
     --muted: #8a8f98;
+    --gray-1: #9aa0a8;
+    --gray-2: #b0b4ba;
+    --gray-3: #5c5c5c;
+    --gray-4: #f4f4f4;
+    --gray-5: #fafafa;
+    --faint: #e4e6ea;
     --line: #e8e8e8;
     --btn: #111111;
     --btn-hover: #333333;
@@ -19,12 +32,12 @@
 
     /* 布局 */
     --page-max: 1040px;
-    --header-h: 60px;
+    --nav-clearance: 96px; /* 锚点跳转时避让悬浮导航的滚动留白 */
 
     color-scheme: light;
 }
 
-/* ---------- 基础 ---------- */
+/* ---------- 2. 基础样式 ---------- */
 
 *,
 *::before,
@@ -156,12 +169,12 @@ a {
     padding: 7px 12px;
     border-radius: 999px;
     font-size: 13.5px;
-    color: #5c5c5c;
+    color: var(--gray-3);
     transition: color 0.15s, background-color 0.15s;
 }
 .nav a:hover {
     color: var(--text);
-    background: #f4f4f4;
+    background: var(--gray-4);
 }
 
 /* ---------- Hero ---------- */
@@ -178,7 +191,7 @@ a {
     font-size: 12px;
     letter-spacing: 0.28em;
     text-transform: uppercase;
-    color: #9aa0a8;
+    color: var(--gray-1);
     margin-bottom: 18px;
 }
 
@@ -189,9 +202,9 @@ a {
     letter-spacing: 0.005em;
 }
 
-/* 第二行淡灰，形成层次 */
-.grad-text {
-    color: #b3b8c0;
+/* 标题第二行淡灰，形成层次 */
+.hero-subline {
+    color: var(--gray-2);
 }
 
 .hero-sub {
@@ -224,7 +237,7 @@ a {
 }
 .stat span {
     font-size: 12px;
-    color: #9aa0a8;
+    color: var(--gray-1);
 }
 
 /* ---------- 目录 ---------- */
@@ -239,7 +252,7 @@ a {
 }
 
 .group {
-    scroll-margin-top: calc(var(--header-h) + 20px);
+    scroll-margin-top: var(--nav-clearance);
 }
 
 .group-head {
@@ -252,7 +265,7 @@ a {
     font-family: var(--font-mono);
     font-size: 12px;
     font-weight: 600;
-    color: #b0b4ba;
+    color: var(--gray-2);
     padding-top: 5px;
 }
 .group-head h2 {
@@ -263,7 +276,7 @@ a {
 .group-head p {
     margin-top: 4px;
     font-size: 13px;
-    color: #9aa0a8;
+    color: var(--gray-1);
 }
 
 /* 卡片网格 */
@@ -303,7 +316,7 @@ a {
     font-size: 22px;
     font-weight: 700;
     line-height: 1;
-    color: #e4e6ea;
+    color: var(--faint);
     transition: color 0.18s ease;
 }
 .card:hover .card-no {
@@ -368,6 +381,7 @@ a {
     margin-bottom: 18px;
 }
 
+/* 标签卡：JS 未加载时的回退样式（加载后由 tags.js 替换为 .tag 文本标签） */
 .badge {
     font-size: 11px;
     font-weight: 500;
@@ -375,22 +389,21 @@ a {
     padding: 2px 9px;
     border-radius: 999px;
     border: 1px solid var(--line);
-    background: #fafafa;
-    color: #666;
+    background: var(--gray-5);
+    color: var(--gray-3);
     white-space: nowrap;
 }
 
-/* 平台编号标签（由 JS 将标签卡替换为纯文本标签） */
+/* 平台编号标签（纯文本） */
 .tag {
     display: inline-flex;
     align-items: baseline;
     gap: 5px;
     font-size: 12px;
-    color: #666;
+    color: var(--gray-3);
     white-space: nowrap;
 }
-.tag i {
-    font-style: normal;
+.tag .tag-no {
     font-family: var(--font-mono);
     font-weight: 600;
     color: var(--text);
@@ -399,7 +412,7 @@ a {
 .meta-size {
     font-family: var(--font-mono);
     font-size: 12px;
-    color: #9aa0a8;
+    color: var(--gray-1);
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
 }
@@ -449,23 +462,15 @@ a {
     color: var(--text);
     margin-bottom: 8px;
 }
-.site-footer a {
-    color: var(--text);
-    border-bottom: 1px solid #c9c9c9;
-    transition: border-color 0.15s;
-}
-.site-footer a:hover {
-    border-bottom-color: var(--text);
+.footer-tags {
+    margin-top: 10px;
+    font-size: 12px;
+    color: var(--gray-1);
 }
 .footer-copy {
     margin-top: 14px;
     font-size: 12px;
-    color: #b0b4ba;
-}
-.footer-tags {
-    margin-top: 10px;
-    font-size: 12px;
-    color: #9aa0a8;
+    color: var(--gray-2);
 }
 
 /* ---------- 响应式 ---------- */
@@ -473,9 +478,6 @@ a {
 @media (max-width: 720px) {
     .hero {
         padding: 88px 20px 44px;
-    }
-    .hero-sub br {
-        display: none;
     }
     .stat {
         padding-right: 24px;
