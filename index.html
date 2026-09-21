@@ -8,7 +8,8 @@
     <meta name="theme-color" content="#ffffff">
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23ffffff' stroke='%23e8e8e8'/%3E%3Crect x='15' y='15' width='14' height='14' rx='4' fill='%232563eb'/%3E%3Crect x='35' y='15' width='14' height='14' rx='4' fill='%230d9488'/%3E%3Crect x='15' y='35' width='14' height='14' rx='4' fill='%2316a34a'/%3E%3Crect x='35' y='35' width='14' height='14' rx='4' fill='%23111111'/%3E%3C/svg%3E">
     <link rel="stylesheet" href="shaders/style.css">
-    <script src="heads/tags.js" defer></script>
+    <script src="heads/downloads.js" defer></script>
+    <script src="heads/catalog.js" defer></script>
 </head>
 <body>
 
@@ -33,148 +34,14 @@
             <p class="hero-kicker">STM32 · Embedded Toolkit Hub</p>
             <h1 class="hero-title">STM32Cube Tools<br><span class="hero-subline">One touch for Downloading</span></h1>
             <p class="hero-sub">STM32CubeIDE、STM32CubeMX、Proteus 与 ST-Link 驱动</p>
-            <div class="hero-stats">
-                <div class="stat"><strong>6</strong><span>可用文件</span></div>
-                <div class="stat"><strong>≈ 3.59 GB</strong><span>资源总量</span></div>
-                <div class="stat"><strong>2026-09-20</strong><span>最近更新</span></div>
-            </div>
+            <div class="hero-stats" id="hero-stats"></div>
         </section>
 
-        <!-- ============ CATALOG ============ -->
-        <section class="catalog">
-
-            <!-- 集成开发环境 -->
-            <section id="ide" class="group">
-                <header class="group-head">
-                    <span class="group-no" aria-hidden="true">01</span>
-                    <div>
-                        <h2>集成开发环境</h2>
-                        <p>一体化 IDE：代码编辑、编译、烧录与调试</p>
-                    </div>
-                </header>
-                <div class="cards">
-                    <article class="card">
-                        <div class="card-top">
-                            <div class="app-icon icon-exe" aria-hidden="true">EXE</div>
-                            <span class="card-no" aria-hidden="true">01</span>
-                        </div>
-                        <h3 class="card-title">stm32cubeide_2.2.0_Windows_x86_64.exe</h3>
-                        <p class="card-desc">STM32CubeIDE 2.2.0 （Windows x64）</p>
-                        <div class="card-meta">
-                            <span class="badge badge-win">Windows x64</span>
-                            <span class="meta-size">860.5 MB</span>
-                        </div>
-                        <a class="download" aria-label="下载 stm32cubeide_2.2.0_Windows_x86_64.exe" href="https://cloud-sumi-use.obs.cn-east-3.myhuaweicloud.com/stm32tools/stm32cubeide_2.2.0_Windows_x86_64.exe">立即下载 <span class="dl-arrow" aria-hidden="true">↓</span></a>
-                    </article>
-
-                    <article class="card">
-                        <div class="card-top">
-                            <div class="app-icon icon-dmg" aria-hidden="true">DMG</div>
-                            <span class="card-no" aria-hidden="true">02</span>
-                        </div>
-                        <h3 class="card-title">stm32cubemx_2.2.0_MacOS_aarch64.dmg</h3>
-                        <p class="card-desc">STM32CubeIDE 2.2.0（macOS · Apple Silicon）</p>
-                        <div class="card-meta">
-                            <span class="badge badge-mac">macOS · ARM64</span>
-                            <span class="meta-size">901.5 MB</span>
-                        </div>
-                        <a class="download" aria-label="下载 stm32cubemx_2.2.0_MacOS_aarch64.dmg" href="https://cloud-sumi-use.obs.cn-east-3.myhuaweicloud.com/stm32tools/stm32cubemx_2.2.0_MacOS_aarch64.dmg">立即下载 <span class="dl-arrow" aria-hidden="true">↓</span></a>
-                    </article>
-                </div>
-            </section>
-
-            <!-- CubeMX -->
-            <section id="cubemx" class="group">
-                <header class="group-head">
-                    <span class="group-no" aria-hidden="true">02</span>
-                    <div>
-                        <h2>STM32CubeMX</h2>
-                        <p>图形化外设配置与工程代码生成</p>
-                    </div>
-                </header>
-                <div class="cards">
-                    <article class="card">
-                        <div class="card-top">
-                            <div class="app-icon icon-exe-mx" aria-hidden="true">EXE</div>
-                            <span class="card-no" aria-hidden="true">03</span>
-                        </div>
-                        <h3 class="card-title">stm32cubemx_setup_Windows_x86_64.exe</h3>
-                        <p class="card-desc">Windows 安装程序（x86_64）</p>
-                        <div class="card-meta">
-                            <span class="badge badge-win">Windows x64</span>
-                            <span class="meta-size">550.2 MB</span>
-                        </div>
-                        <a class="download" aria-label="下载 stm32cubemx_setup_Windows_x86_64.exe" href="https://cloud-sumi-use.obs.cn-east-3.myhuaweicloud.com/stm32tools/stm32cubemx_setup_Windows_x86_64.exe">立即下载 <span class="dl-arrow" aria-hidden="true">↓</span></a>
-                    </article>
-
-                    <article class="card">
-                        <div class="card-top">
-                            <div class="app-icon icon-zip" aria-hidden="true">ZIP</div>
-                            <span class="card-no" aria-hidden="true">04</span>
-                        </div>
-                        <h3 class="card-title">stm32cubemx_setup_MacOS_aarch64.zip</h3>
-                        <p class="card-desc">macOS 压缩包（Apple Silicon）</p>
-                        <div class="card-meta">
-                            <span class="badge badge-mac">macOS · ARM64</span>
-                            <span class="meta-size">577.5 MB</span>
-                        </div>
-                        <a class="download" aria-label="下载 stm32cubemx_setup_MacOS_aarch64.zip" href="https://cloud-sumi-use.obs.cn-east-3.myhuaweicloud.com/stm32tools/stm32cubemx_setup_MacOS_aarch64.zip">立即下载 <span class="dl-arrow" aria-hidden="true">↓</span></a>
-                    </article>
-                </div>
-            </section>
-
-            <!-- Proteus 仿真 -->
-            <section id="proteus" class="group">
-                <header class="group-head">
-                    <span class="group-no" aria-hidden="true">03</span>
-                    <div>
-                        <h2>Proteus 仿真</h2>
-                        <p>电路原理图仿真与 PCB 设计</p>
-                    </div>
-                </header>
-                <div class="cards">
-                    <article class="card">
-                        <div class="card-top">
-                            <div class="app-icon icon-iso" aria-hidden="true">ISO</div>
-                            <span class="card-no" aria-hidden="true">05</span>
-                        </div>
-                        <h3 class="card-title">Proteus_9.0.iso</h3>
-                        <p class="card-desc">Proteus 9.0 电路仿真与 PCB 设计套件</p>
-                        <div class="card-meta">
-                            <span class="badge badge-win">Windows x64</span>
-                            <span class="meta-size">781.0 MB</span>
-                        </div>
-                        <a class="download" aria-label="下载 Proteus_9.0.iso" href="https://cloud-sumi-use.obs.cn-east-3.myhuaweicloud.com/stm32tools/Proteus_9.0.iso">立即下载 <span class="dl-arrow" aria-hidden="true">↓</span></a>
-                    </article>
-                </div>
-            </section>
-
-            <!-- 调试工具 -->
-            <section id="tools" class="group">
-                <header class="group-head">
-                    <span class="group-no" aria-hidden="true">04</span>
-                    <div>
-                        <h2>调试与驱动</h2>
-                        <p>ST-Link 调试器驱动及配套工具</p>
-                    </div>
-                </header>
-                <div class="cards">
-                    <article class="card">
-                        <div class="card-top">
-                            <div class="app-icon icon-7z" aria-hidden="true">7Z</div>
-                            <span class="card-no" aria-hidden="true">06</span>
-                        </div>
-                        <h3 class="card-title">stlink.7z</h3>
-                        <p class="card-desc">ST-Link 调试器驱动与配套烧录工具</p>
-                        <div class="card-meta">
-                            <span class="badge badge-all">全平台</span>
-                            <span class="meta-size">4.8 MB</span>
-                        </div>
-                        <a class="download" aria-label="下载 stlink.7z" href="https://cloud-sumi-use.obs.cn-east-3.myhuaweicloud.com/stm32tools/stlink.7z">立即下载 <span class="dl-arrow" aria-hidden="true">↓</span></a>
-                    </article>
-                </div>
-            </section>
-
+        <!-- ============ CATALOG（由 heads/catalog.js 渲染） ============ -->
+        <section class="catalog" id="catalog" aria-label="下载资源目录">
+            <noscript>
+                <p class="noscript-tip">资源列表需要启用 JavaScript 才能显示。</p>
+            </noscript>
         </section>
     </main>
 
