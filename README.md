@@ -1,5 +1,7 @@
 # Surayson 溯昇 · 下载站
 
+示范地址https://download.surayson.com/
+
 STM32 嵌入式开发工具静态下载页，纯 HTML + CSS，仅一个渐进增强的 JS 脚本。
 
 ## 目录结构
