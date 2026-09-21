@@ -76,6 +76,14 @@ a {
     border-radius: 12px;
 }
 
+/* 数据源标注（OBS 实时 / 本地缓存降级） */
+.data-source {
+    margin-top: -56px;
+    text-align: center;
+    font-size: 12px;
+    color: var(--gray-1);
+}
+
 ::selection {
     background: var(--text);
     color: #fff;
@@ -365,6 +373,9 @@ a {
 .icon-iso {
     background: #7c3aed;
 }
+.icon-file {
+    background: #64748b;
+}
 
 /* 标题与描述 */
 .card-title {
@@ -508,6 +519,9 @@ a {
         padding: 0;
         align-items: center;
         text-align: center;
+    }
+    .data-source {
+        margin-top: -40px;
     }
     .stat + .stat {
         border-left: 1px solid var(--line);
