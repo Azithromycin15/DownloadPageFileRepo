@@ -64,27 +64,32 @@ a {
     border-radius: 2px;
 }
 
-/* ---------- 顶部导航 ---------- */
+/* ---------- 顶部导航（悬浮胶囊） ---------- */
 
 .site-header {
-    position: sticky;
-    top: 0;
+    position: fixed;
+    top: 14px;
+    left: 0;
+    right: 0;
     z-index: 40;
-    background: rgba(255, 255, 255, 0.94);
-    -webkit-backdrop-filter: blur(8px);
-    backdrop-filter: blur(8px);
-    border-bottom: 1px solid var(--line);
+    pointer-events: none; /* 外层不阻挡点击，仅胶囊本体可交互 */
 }
 
 .header-inner {
     max-width: var(--page-max);
     margin-inline: auto;
-    height: var(--header-h);
-    padding-inline: 24px;
+    padding: 8px 12px 8px 20px;
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 16px;
+    background: rgba(255, 255, 255, 0.92);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    box-shadow: 0 2px 14px rgba(17, 17, 17, 0.06);
+    pointer-events: auto;
 }
 
 .brand {
@@ -137,25 +142,13 @@ a {
     color: var(--text);
     background: #f4f4f4;
 }
-.nav-cta {
-    margin-left: 8px;
-    color: #fff !important;
-    background: var(--btn) !important;
-}
-.nav-cta:hover {
-    background: var(--btn-hover) !important;
-}
-.nav-cta span {
-    font-size: 12px;
-    vertical-align: 1px;
-}
 
 /* ---------- Hero ---------- */
 
 .hero {
     max-width: var(--page-max);
     margin-inline: auto;
-    padding: 84px 24px 64px;
+    padding: 108px 24px 64px;
 }
 
 .hero-kicker {
@@ -437,7 +430,7 @@ a {
 
 @media (max-width: 720px) {
     .hero {
-        padding: 56px 20px 44px;
+        padding: 88px 20px 44px;
     }
     .hero-sub br {
         display: none;
@@ -455,7 +448,7 @@ a {
     .cards {
         grid-template-columns: 1fr;
     }
-    .nav a:not(.nav-cta) {
+    .nav a {
         display: none;
     }
 }
